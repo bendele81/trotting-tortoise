@@ -9,7 +9,8 @@ import { DISTANCES } from "../data/runners";
 import type { Runner } from "../data/runners";
 import { getRunner } from "../lib/db";
 import { fmtTime } from "../lib/format";
-import { SHOP_URL, DEMO } from "../config";
+import { SHOP_URL, DEMO, DEMO_EDITABLE } from "../config";
+import { getEditSecret, createToken } from "../lib/token";
 
 const raw = Astro.params.username ?? "";
 const name = normalize(raw);
@@ -34,6 +35,13 @@ if (runner && raw !== name) {
 Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
 if (failed) Astro.response.status = 503;
 else if (!runner) Astro.response.status = 404;
+
+// Demo only: a link to the edit screen for the sample runners.
+let demoEditUrl = "";
+if (runner && DEMO && DEMO_EDITABLE.includes(runner.username)) {
+  const secret = getEditSecret();
+  if (secret) demoEditUrl = `/edit/${await createToken(secret, runner.username, runner.linkVersion ?? 0)}`;
+}
 
 const pageTitle = runner
   ? `${runner.username} · Trotting Tortoise`
@@ -68,7 +76,16 @@ const pageTitle = runner
               <span class="btn" aria-disabled="true">Shirt coming soon</span>
             )}
           </div>
-          {DEMO && <p class="demo"><span class="demo-tag">Demo</span> Sample data, not a real runner.</p>}
+          {DEMO && (
+            <p class="demo">
+              <span class="demo-tag">Demo</span> Sample data, not a real runner.
+              {demoEditUrl && (
+                <>
+                  {" "}<a href={demoEditUrl}>Try editing this page</a>
+                </>
+              )}
+            </p>
+          )}
         </>
       ) : failed ? (
         <>
@@ -199,6 +216,9 @@ const pageTitle = runner
     margin: 1.5rem 0 0;
     font-size: 0.8rem;
     color: var(--muted);
+  }
+  .demo a {
+    color: var(--ink);
   }
   .toast {
     position: fixed;
