@@ -14,12 +14,10 @@ import { SHOP_URL, DEMO } from "../config";
         full marathon times. Run faster? Update them anytime.
       </p>
       <ol class="steps">
-         <li><span class="n">1</span> Buy a shirt</li>
-         <li><span class="n">2</span> Pick a username and enter your times at checkout</li>
-         <li><span class="n">3</span> Wear it. Anyone can scan the QR</li>
-         <li><span class="n">4</span> They see your times. You update them anytime</li>
+        <li><span class="n">1</span> Pick a username and enter your times</li>
+        <li><span class="n">2</span> Wear it. Anyone can scan the QR</li>
+        <li><span class="n">3</span> They see your times. You update them anytime</li>
       </ol>
-
       <div class="try-row">
         <figure class="qr">
           <DemoQr class="qrsvg" />
@@ -104,6 +102,7 @@ import { SHOP_URL, DEMO } from "../config";
     grid-template-columns: 1fr 1fr;
   }
   .pane {
+    min-width: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -267,6 +266,7 @@ import { SHOP_URL, DEMO } from "../config";
   }
   .field input {
     flex: 1;
+    width: 100%;
     min-width: 0;
     border: 0;
     background: transparent;
@@ -309,7 +309,10 @@ import { SHOP_URL, DEMO } from "../config";
   }
   @media (max-width: 760px) {
     .split {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .pre {
+      font-size: 0.75rem;
     }
     .pane {
       padding: 2.5rem 1.5rem;
