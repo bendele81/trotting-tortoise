@@ -1,0 +1,235 @@
+---
+import Base from "../layouts/Base.astro";
+import Mark from "../components/Mark.astro";
+import { SHOP_URL, DEMO } from "../config";
+---
+<Base>
+  <div class="split">
+    <section class="pane shop" aria-label="Shop">
+      <Mark class="mark" />
+      <h1 class="tagline">Set your land speed record.</h1>
+      {
+        SHOP_URL ? (
+          <a class="big" href={SHOP_URL}>Shop the shirt</a>
+        ) : (
+          <span class="big off" aria-disabled="true">Shirt coming soon</span>
+        )
+      }
+      <p class="note">Every shirt has a QR code that shows your 5K, 10K, half and full times.</p>
+    </section>
+
+    <section class="pane look" aria-label="Look up a runner">
+      <h2>Look up a runner</h2>
+      <p>Scanned a shirt, or know a username? Type it in to see their times.</p>
+      <form id="f" novalidate>
+        <label for="u">Username</label>
+        <div class="field">
+          <span class="pre" aria-hidden="true">trottingtortoise.com/</span>
+          <input
+            id="u"
+            name="u"
+            type="text"
+            autocomplete="off"
+            autocapitalize="none"
+            autocorrect="off"
+            spellcheck="false"
+            maxlength="21"
+            aria-describedby="err"
+          />
+          <button class="go" type="submit">See times</button>
+        </div>
+        <p class="err" id="err" role="alert"></p>
+      </form>
+      <p class="priv">Pages show a username and four times. Nothing else.</p>
+      {
+        DEMO && (
+          <p class="try">
+            <span class="demo-tag">Demo</span> Sample runners to try:
+            <a href="/slowandsteady">slowandsteady</a>, <a href="/fastfrank">fastfrank</a>,
+            <a href="/turbo_turtle">turbo_turtle</a>
+          </p>
+        )
+      }
+    </section>
+  </div>
+</Base>
+
+<script>
+  import { normalize, isValid, MIN_LEN, MAX_LEN } from "../lib/username";
+
+  const form = document.getElementById("f") as HTMLFormElement;
+  const input = document.getElementById("u") as HTMLInputElement;
+  const err = document.getElementById("err") as HTMLElement;
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = normalize(input.value);
+    if (!name) {
+      err.textContent = "Enter a username.";
+      return;
+    }
+    if (!isValid(name)) {
+      err.textContent = `Usernames are ${MIN_LEN}–${MAX_LEN} letters, numbers or underscores.`;
+      return;
+    }
+    err.textContent = "";
+    window.location.href = "/" + name;
+  });
+</script>
+
+<style>
+  .split {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .pane {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem clamp(1.5rem, 5vw, 5rem);
+  }
+  .shop {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .mark {
+    display: block;
+    width: min(24rem, 100%);
+    height: auto;
+    margin: 0 0 1.5rem;
+    opacity: 0.9;
+  }
+  .tagline {
+    font-family: var(--num);
+    font-weight: 700;
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    line-height: 0.95;
+    margin: 0 0 2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
+  .big {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 26rem;
+    min-height: 5rem;
+    border-radius: 0.75rem;
+    background: var(--bg);
+    color: var(--ink);
+    font: 700 1.5rem var(--sans);
+    text-decoration: none;
+    transition: transform 0.15s;
+  }
+  a.big:hover {
+    transform: translateY(-2px);
+  }
+  a.big:focus-visible {
+    outline: 3px solid var(--bg);
+    outline-offset: 3px;
+  }
+  .big.off {
+    opacity: 0.7;
+  }
+  .note {
+    margin: 1rem 0 0;
+    font-size: 0.85rem;
+    opacity: 0.75;
+  }
+  .look h2 {
+    font-family: var(--num);
+    font-weight: 700;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1;
+    margin: 0 0 0.6rem;
+  }
+  .look p {
+    margin: 0 0 1.5rem;
+    color: var(--muted);
+    max-width: 26rem;
+  }
+  label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin: 0 0 0.5rem;
+  }
+  .field {
+    display: flex;
+    align-items: center;
+    max-width: 26rem;
+    border: 2px solid var(--ink);
+    border-radius: 0.75rem;
+    padding: 0 0.35rem 0 1rem;
+    min-height: 4rem;
+  }
+  .field:focus-within {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+  .pre {
+    color: var(--muted);
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+  .field input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font: 600 1rem var(--sans);
+    padding: 0.5rem 0.4rem;
+    outline: 0;
+  }
+  .go {
+    border: 0;
+    border-radius: 0.5rem;
+    background: var(--accent);
+    color: var(--on-accent);
+    font: 700 0.95rem var(--sans);
+    padding: 0.85rem 1.1rem;
+    cursor: pointer;
+    min-height: 2.75rem;
+  }
+  .go:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+  .err {
+    min-height: 1.4rem;
+    margin: 0.6rem 0 0 !important;
+    font-size: 0.85rem;
+    color: var(--ink) !important;
+    font-weight: 600;
+  }
+  .priv {
+    margin: 1.25rem 0 0 !important;
+    font-size: 0.8rem;
+  }
+  .try {
+    margin: 1rem 0 0 !important;
+    font-size: 0.85rem;
+  }
+  .try a {
+    color: var(--ink);
+  }
+  @media (max-width: 760px) {
+    .split {
+      grid-template-columns: 1fr;
+    }
+    .pane {
+      padding: 2.5rem 1.5rem;
+    }
+    .big {
+      min-height: 4.5rem;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .big {
+      transition: none;
+    }
+  }
+</style>

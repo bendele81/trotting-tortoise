@@ -1,0 +1,201 @@
+---
+// Rendered on demand (not at build time): one page per runner, looked up by username.
+export const prerender = false;
+
+import Base from "../layouts/Base.astro";
+import Mark from "../components/Mark.astro";
+import { normalize, isValid, isReserved } from "../lib/username";
+import { findRunner, DISTANCES } from "../data/runners";
+import { fmtTime } from "../lib/format";
+import { SHOP_URL, DEMO } from "../config";
+
+const raw = Astro.params.username ?? "";
+const name = normalize(raw);
+
+// Tidy up capitals typed into the address bar: /FastFrank -> /fastfrank
+const runner = isValid(name) && !isReserved(name) ? findRunner(name) : null;
+if (runner && raw !== name) {
+  return Astro.redirect(`/${name}`, 301);
+}
+
+// Runner pages should never be listed by search engines.
+Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
+if (!runner) Astro.response.status = 404;
+
+const pageTitle = runner ? `${runner.username} · Trotting Tortoise` : "Runner not found · Trotting Tortoise";
+---
+<Base title={pageTitle} noindex>
+  <main>
+    <a href="/" class="home" aria-label="Trotting Tortoise home"><Mark class="mark" /></a>
+
+    {
+      runner ? (
+        <>
+          <h1 class="name">{runner.username}</h1>
+          <section class="card" aria-label="Personal records">
+            {DISTANCES.map((d) => {
+              const sec = runner.times[d];
+              return (
+                <div class:list={["row", { empty: sec === null }]}>
+                  <div class="dist">{d}</div>
+                  <div class="time">{sec === null ? "Not run yet" : fmtTime(sec)}</div>
+                </div>
+              );
+            })}
+          </section>
+          <div class="foot">
+            <button class="btn primary" id="share" type="button">Share this page</button>
+            {SHOP_URL ? (
+              <a class="btn" href={SHOP_URL}>Get your shirt</a>
+            ) : (
+              <span class="btn" aria-disabled="true">Shirt coming soon</span>
+            )}
+          </div>
+          {DEMO && <p class="demo"><span class="demo-tag">Demo</span> Sample data, not a real runner.</p>}
+        </>
+      ) : (
+        <>
+          <h1 class="name">No runner here</h1>
+          <p class="sub">There's no page for that username.</p>
+          <div class="foot">
+            <a class="btn primary" href="/">Back to home</a>
+          </div>
+        </>
+      )
+    }
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </main>
+</Base>
+
+<script>
+  const share = document.getElementById("share");
+  const toast = document.getElementById("toast") as HTMLElement | null;
+  let timer: number | undefined;
+
+  function say(msg: string) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add("show");
+    clearTimeout(timer);
+    timer = window.setTimeout(() => toast.classList.remove("show"), 2200);
+  }
+
+  share?.addEventListener("click", async () => {
+    const data = { title: document.title, url: location.href };
+    try {
+      if (navigator.share) {
+        await navigator.share(data);
+        return;
+      }
+      await navigator.clipboard.writeText(location.href);
+      say("Link copied");
+    } catch {
+      // Closing the share sheet throws too; that's fine, stay quiet.
+    }
+  });
+</script>
+
+<style>
+  main {
+    max-width: 30rem;
+    margin: 0 auto;
+    padding: 1.75rem 1.25rem 2.5rem;
+  }
+  .home {
+    display: block;
+    width: min(15rem, 70%);
+    margin: 0 0 1.25rem;
+    color: var(--muted);
+  }
+  .mark {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .name {
+    font-family: var(--num);
+    font-weight: 700;
+    font-size: 3.25rem;
+    line-height: 0.95;
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+  .sub {
+    margin: 0.75rem 0 0;
+    color: var(--muted);
+  }
+  .card {
+    background: var(--card);
+    border-radius: 0.75rem;
+    margin: 1.75rem 0 0;
+    overflow: hidden;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: 0 0.75rem;
+    padding: 1.2rem 1.1rem;
+    border-top: 1px solid var(--line);
+    align-items: center;
+  }
+  .row:first-child {
+    border-top: 0;
+  }
+  .dist {
+    font-family: var(--num);
+    font-weight: 700;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--muted);
+  }
+  .time {
+    font-family: var(--num);
+    font-weight: 700;
+    font-size: 3.1rem;
+    line-height: 0.95;
+    font-variant-numeric: tabular-nums;
+  }
+  .empty .time {
+    color: var(--muted);
+    font-size: 1.6rem;
+    font-family: var(--sans);
+    font-weight: 600;
+  }
+  .empty .dist {
+    opacity: 0.7;
+  }
+  .foot {
+    margin: 1.75rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .demo {
+    margin: 1.5rem 0 0;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--bg);
+    padding: 0.6rem 1rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .toast.show {
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .toast {
+      transition: none;
+    }
+  }
+</style>
