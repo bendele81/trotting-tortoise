@@ -1,21 +1,37 @@
 ---
 import Base from "../layouts/Base.astro";
 import Mark from "../components/Mark.astro";
+import DemoQr from "../components/DemoQr.astro";
 import { SHOP_URL, DEMO } from "../config";
 ---
 <Base>
   <div class="split">
-    <section class="pane shop" aria-label="Shop">
+    <section class="pane shop" aria-label="About the shirt">
       <Mark class="mark" />
-      <h1 class="tagline">Set your land speed record.</h1>
-      {
-        SHOP_URL ? (
-          <a class="big" href={SHOP_URL}>Shop the shirt</a>
-        ) : (
-          <span class="big off" aria-disabled="true">Shirt coming soon</span>
-        )
-      }
-      <p class="note">Every shirt has a QR code that shows your 5K, 10K, half and full times.</p>
+      <h1 class="headline">Wear your PRs.</h1>
+      <p class="lede">
+        Every shirt has a QR code on the back. Anyone can scan it to see your 5K, 10K, half and
+        full marathon times. Run faster? Update them anytime.
+      </p>
+      <ol class="steps">
+        <li><span class="n">1</span> Pick a username and enter your times</li>
+        <li><span class="n">2</span> Wear it. Anyone can scan the QR</li>
+        <li><span class="n">3</span> They see your times. You update them anytime</li>
+      </ol>
+      <div class="try-row">
+        <figure class="qr">
+          <DemoQr class="qrsvg" />
+          <figcaption>Try it: scan with your phone</figcaption>
+        </figure>
+        {
+          SHOP_URL ? (
+            <a class="big" href={SHOP_URL}>Shop the shirt</a>
+          ) : (
+            <span class="big off" aria-disabled="true">Shirt coming soon</span>
+          )
+        }
+      </div>
+      <p class="note">Set your land speed record.</p>
     </section>
 
     <section class="pane look" aria-label="Look up a runner">
@@ -29,13 +45,13 @@ import { SHOP_URL, DEMO } from "../config";
             id="u"
             name="u"
             type="text"
+            placeholder="username"
             autocomplete="off"
             autocapitalize="none"
             autocorrect="off"
             spellcheck="false"
             maxlength="21"
             aria-describedby="err"
-            placeholder="username"
           />
           <button class="go" type="submit">See times</button>
         </div>
@@ -45,7 +61,7 @@ import { SHOP_URL, DEMO } from "../config";
       {
         DEMO && (
           <p class="try">
-            <span class="demo-tag">Demo</span>{" "}Sample runners to try:{" "}
+            <span class="demo-tag">Demo</span> Sample runners to try:
             <a href="/slowandsteady">slowandsteady</a>{", "}
             <a href="/fastfrank">fastfrank</a>{", "}
             <a href="/turbo_turtle">turbo_turtle</a>
@@ -101,6 +117,77 @@ import { SHOP_URL, DEMO } from "../config";
     height: auto;
     margin: 0 0 1.5rem;
     opacity: 0.9;
+  }
+  .mark {
+    width: min(9rem, 40%) !important;
+    margin: 0 0 1.25rem !important;
+  }
+  .headline {
+    font-family: var(--num);
+    font-weight: 700;
+    font-size: clamp(3rem, 6vw, 5rem);
+    line-height: 0.92;
+    margin: 0 0 1rem;
+    text-transform: uppercase;
+  }
+  .lede {
+    margin: 0 0 1.5rem;
+    max-width: 30rem;
+    font-size: 1.05rem;
+  }
+  .steps {
+    list-style: none;
+    margin: 0 0 2rem;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+    max-width: 30rem;
+    font-weight: 600;
+  }
+  .steps li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .n {
+    flex: none;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font: 700 0.9rem var(--sans);
+  }
+  .try-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .qr {
+    margin: 0;
+    width: 9.5rem;
+  }
+  .qrsvg {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 0.4rem;
+  }
+  .qr figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    opacity: 0.8;
+  }
+  .try-row .big {
+    flex: 1;
+    min-width: 12rem;
+    max-width: 18rem;
+    min-height: 4.5rem;
+    font-size: 1.25rem;
   }
   .tagline {
     font-family: var(--num);
