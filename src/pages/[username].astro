@@ -5,24 +5,41 @@ export const prerender = false;
 import Base from "../layouts/Base.astro";
 import Mark from "../components/Mark.astro";
 import { normalize, isValid, isReserved } from "../lib/username";
-import { findRunner, DISTANCES } from "../data/runners";
+import { DISTANCES } from "../data/runners";
+import type { Runner } from "../data/runners";
+import { getRunner } from "../lib/db";
 import { fmtTime } from "../lib/format";
 import { SHOP_URL, DEMO } from "../config";
 
 const raw = Astro.params.username ?? "";
 const name = normalize(raw);
 
+let runner: Runner | null = null;
+let failed = false;
+if (isValid(name) && !isReserved(name)) {
+  try {
+    runner = await getRunner(name);
+  } catch (err) {
+    console.error("Runner lookup failed", err);
+    failed = true;
+  }
+}
+
 // Tidy up capitals typed into the address bar: /FastFrank -> /fastfrank
-const runner = isValid(name) && !isReserved(name) ? findRunner(name) : null;
 if (runner && raw !== name) {
   return Astro.redirect(`/${name}`, 301);
 }
 
 // Runner pages should never be listed by search engines.
 Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
-if (!runner) Astro.response.status = 404;
+if (failed) Astro.response.status = 503;
+else if (!runner) Astro.response.status = 404;
 
-const pageTitle = runner ? `${runner.username} · Trotting Tortoise` : "Runner not found · Trotting Tortoise";
+const pageTitle = runner
+  ? `${runner.username} · Trotting Tortoise`
+  : failed
+    ? "Try again · Trotting Tortoise"
+    : "Runner not found · Trotting Tortoise";
 ---
 <Base title={pageTitle} noindex>
   <main>
@@ -52,6 +69,14 @@ const pageTitle = runner ? `${runner.username} · Trotting Tortoise` : "Runner n
             )}
           </div>
           {DEMO && <p class="demo"><span class="demo-tag">Demo</span> Sample data, not a real runner.</p>}
+        </>
+      ) : failed ? (
+        <>
+          <h1 class="name">Try again</h1>
+          <p class="sub">We couldn't load that page just now. Please refresh in a moment.</p>
+          <div class="foot">
+            <a class="btn primary" href="/">Back to home</a>
+          </div>
         </>
       ) : (
         <>
