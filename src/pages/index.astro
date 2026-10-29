@@ -41,7 +41,6 @@ import { SHOP_URL, DEMO } from "../config";
       <form id="f" novalidate>
         <label for="u">Username</label>
         <div class="field">
-          <span class="pre" aria-hidden="true">trottingtortoise.com/</span>
           <input
             id="u"
             name="u"
@@ -260,11 +259,6 @@ import { SHOP_URL, DEMO } from "../config";
     outline: 3px solid var(--accent);
     outline-offset: 3px;
   }
-  .pre {
-    color: var(--muted);
-    font-size: 0.85rem;
-    white-space: nowrap;
-  }
   .field input {
     flex: 1;
     width: 100%;
@@ -311,9 +305,6 @@ import { SHOP_URL, DEMO } from "../config";
   @media (max-width: 760px) {
     .split {
       grid-template-columns: minmax(0, 1fr);
-    }
-    .pre {
-      font-size: 0.75rem;
     }
     /* A phone can't scan its own screen, so skip the demo QR on small screens. */
     .qr {
