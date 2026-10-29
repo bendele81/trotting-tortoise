@@ -1,3 +1,10 @@
 {
-  "name": "trotting-tortoise"
+  "name": "trotting-tortoise",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "trotting-tortoise",
+      "database_id": "484a7bac-667e-4c7d-a3f4-463804f67b98"
+    }
+  ]
 }
