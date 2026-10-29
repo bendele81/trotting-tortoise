@@ -35,6 +35,7 @@ import { SHOP_URL, DEMO } from "../config";
             spellcheck="false"
             maxlength="21"
             aria-describedby="err"
+            placeholder="username"
           />
           <button class="go" type="submit">See times</button>
         </div>
@@ -44,8 +45,9 @@ import { SHOP_URL, DEMO } from "../config";
       {
         DEMO && (
           <p class="try">
-            <span class="demo-tag">Demo</span> Sample runners to try:
-            <a href="/slowandsteady">slowandsteady</a>, <a href="/fastfrank">fastfrank</a>,
+            <span class="demo-tag">Demo</span>{" "}Sample runners to try:{" "}
+            <a href="/slowandsteady">slowandsteady</a>{", "}
+            <a href="/fastfrank">fastfrank</a>{", "}
             <a href="/turbo_turtle">turbo_turtle</a>
           </p>
         )
@@ -159,7 +161,7 @@ import { SHOP_URL, DEMO } from "../config";
   .field {
     display: flex;
     align-items: center;
-    max-width: 26rem;
+    max-width: 34rem;
     border: 2px solid var(--ink);
     border-radius: 0.75rem;
     padding: 0 0.35rem 0 1rem;
@@ -171,7 +173,7 @@ import { SHOP_URL, DEMO } from "../config";
   }
   .pre {
     color: var(--muted);
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     white-space: nowrap;
   }
   .field input {
