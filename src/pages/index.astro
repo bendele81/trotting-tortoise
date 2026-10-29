@@ -315,6 +315,13 @@ import { SHOP_URL, DEMO } from "../config";
     .pre {
       font-size: 0.75rem;
     }
+    /* A phone can't scan its own screen, so skip the demo QR on small screens. */
+    .qr {
+      display: none;
+    }
+    .try-row .big {
+      max-width: none;
+    }
     .pane {
       padding: 2.5rem 1.5rem;
     }
