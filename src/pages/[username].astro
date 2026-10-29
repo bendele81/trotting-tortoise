@@ -132,7 +132,7 @@ const pageTitle = runner ? `${runner.username} · Trotting Tortoise` : "Runner n
   }
   .row {
     display: grid;
-    grid-template-columns: 4.5rem 1fr;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
     gap: 0 0.75rem;
     padding: 1.2rem 1.1rem;
     border-top: 1px solid var(--line);
@@ -151,7 +151,7 @@ const pageTitle = runner ? `${runner.username} · Trotting Tortoise` : "Runner n
   .time {
     font-family: var(--num);
     font-weight: 700;
-    font-size: 3.1rem;
+    font-size: clamp(2.4rem, 11vw, 3.1rem);
     line-height: 0.95;
     font-variant-numeric: tabular-nums;
   }
